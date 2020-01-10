@@ -6,64 +6,57 @@ import (
 	"time"
 )
 
-//Logger 日志结构体
-type Logger struct {
+//ConsoleLogger 日志结构体
+type ConsoleLogger struct {
 	logLevel LogLevel
 }
 
-//NewLog 构造函数
-func NewLog(levelStr string) Logger {
+//NewConsoleLogger 构造函数
+func NewConsoleLogger(levelStr string) ConsoleLogger {
 	level, err := parseLogLevel(levelStr)
 	if err != nil {
 		panic(err)
 	}
-	return Logger{
+	return ConsoleLogger{
 		logLevel: level,
 	}
 }
 
-func (l Logger) enable(loglevel LogLevel) bool {
-	return l.logLevel >= loglevel
+func (c ConsoleLogger) log(lv LogLevel, format string, a ...interface{}) {
+	if c.enable(lv) {
+		msg := fmt.Sprintf(format, a...)
+		now := time.Now()
+		funcName, fileName, lineNo := getInfo(3)
+		fmt.Fprintf(os.Stdout, "[%s] [%s] [%s:%s:%d] : %s \n", now.Format("2006-01-02 15:04:05"), getLogString(lv), fileName, funcName, lineNo, msg)
+	}
 }
 
-func log(lv LogLevel, format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	now := time.Now()
-	funcName, fileName, lineNo := getInfo(3)
-	fmt.Fprintf(os.Stdout, "[%s] [%s] [%s:%s:%d] : %s \n", now.Format("2006-01-02 15:04:05"), getLogString(lv), fileName, funcName, lineNo, msg)
+//enable 告警级别开关
+func (c ConsoleLogger) enable(loglevel LogLevel) bool {
+	return c.logLevel >= loglevel
 }
 
 //Debug debug信息
-func (l Logger) Debug(format string, a ...interface{}) {
-	if l.enable(DEBUG) {
-		log(DEBUG, format, a...)
-	}
+func (c ConsoleLogger) Debug(format string, a ...interface{}) {
+	c.log(DEBUG, format, a...)
 }
 
 //Info info信息
-func (l Logger) Info(format string, a ...interface{}) {
-	if l.enable(INFO) {
-		log(INFO, format, a...)
-	}
+func (c ConsoleLogger) Info(format string, a ...interface{}) {
+	c.log(INFO, format, a...)
 }
 
 //Warning warning信息
-func (l Logger) Warning(format string, a ...interface{}) {
-	if l.enable(WARNING) {
-		log(WARNING, format, a...)
-	}
+func (c ConsoleLogger) Warning(format string, a ...interface{}) {
+	c.log(WARNING, format, a...)
 }
 
 //Error error信息
-func (l Logger) Error(format string, a ...interface{}) {
-	if l.enable(ERROR) {
-		log(ERROR, format, a...)
-	}
+func (c ConsoleLogger) Error(format string, a ...interface{}) {
+	c.log(ERROR, format, a...)
 }
 
 //Fatal fatal信息
-func (l Logger) Fatal(format string, a ...interface{}) {
-	if l.enable(FATAL) {
-		log(FATAL, format, a...)
-	}
+func (c ConsoleLogger) Fatal(format string, a ...interface{}) {
+	c.log(FATAL, format, a...)
 }
