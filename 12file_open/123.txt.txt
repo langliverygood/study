@@ -1,0 +1,8 @@
+Windows PowerShell
+版权所有 (C) Microsoft Corporation。保留所有权利。
+
+尝试新的跨平台 PowerShell https://aka.ms/pscore6
+
+PS E:\ProjectFiles\go\src\gostudy\12file_open> go run .\main.go
+Open file error:  open 132.txt: The system cannot find the file specified.
+PS E:\ProjectFiles\go\src\gostudy\12file_open> 
